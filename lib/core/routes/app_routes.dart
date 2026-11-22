@@ -3,6 +3,7 @@ import '../../features/guests/models/guest_pass_model.dart';
 import '../../features/guests/screens/create_guest_pass_screen.dart';
 import '../../features/guests/screens/guest_pass_ticket_screen.dart';
 import '../../features/guests/screens/guest_passes_hub_screen.dart';
+import '../../main.dart';
 import '../constants/app_constants.dart';
 
 class CreateGuestPassArgs {
@@ -28,17 +29,25 @@ class GuestPassTicketArgs {
 class AppRoutes {
   AppRoutes._();
 
+  // Main shell route
+  static const String home = '/';
+
   // Guest Passes feature routes
   static const String guestPass = '/guest-pass';
   static const String createGuestPass = '/guest-pass/create';
   static const String guestPassTicket = '/guest-pass/ticket';
 
-  // Teammates can add their route names here:
+  // Teammates can add their standalone route names here:
   // static const String login = '/login';
-  // static const String booking = '/booking';
+  // static const String bookingDetail = '/booking/detail';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case home:
+        return MaterialPageRoute(
+          builder: (_) => const Member3ShowcaseScreen(),
+        );
+
       case guestPass:
         return MaterialPageRoute(
           builder: (_) => const GuestPassesHubScreen(),
@@ -63,8 +72,8 @@ class AppRoutes {
         );
 
       // Teammates can add their route cases here:
-      // case booking:
-      //   return MaterialPageRoute(builder: (_) => const BookingScreen());
+      // case login:
+      //   return MaterialPageRoute(builder: (_) => const LoginScreen());
 
       default:
         return MaterialPageRoute(

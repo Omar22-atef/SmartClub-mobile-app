@@ -1,13 +1,23 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'core/constants/app_constants.dart';
-import 'core/theme/app_theme.dart';
 import 'core/routes/app_routes.dart';
+import 'core/theme/app_theme.dart';
+import 'features/guests/screens/guest_passes_hub_screen.dart';
+import 'features/events/models/event_model.dart';
+import 'features/events/screens/event_details_screen.dart';
+import 'features/events/screens/events_screen.dart';
+import 'features/events/screens/my_events_screen.dart';
+import 'features/events/services/event_mock_data.dart';
+ import 'features/booking/screens/facilities_screen.dart';
+ import 'features/booking/screens/my_bookings_screen.dart';
+import 'features/events/screens/events_screen.dart';
+ import 'features/events/screens/my_events_screen.dart';
+
 void main() {
   runApp(const MyApp());
 }
 
-/// Allows mouse drag scrolling on desktop, web, and emulators
+/// Allows mouse drag scrolling on desktop, web, and emulators.
 class AppScrollBehavior extends MaterialScrollBehavior {
   const AppScrollBehavior();
 
@@ -27,20 +37,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-  debugShowCheckedModeBanner: false,
-  title: 'Smart Club',
-  theme: AppTheme.lightTheme,
-  initialRoute: AppRoutes.guestPass,
-  onGenerateRoute: AppRoutes.onGenerateRoute,
-  );
-  }
-}
-
       debugShowCheckedModeBanner: false,
-      title: 'Smart Club - Member 3',
+      title: 'Smart Club',
       theme: AppTheme.lightTheme,
       scrollBehavior: const AppScrollBehavior(),
-      home: const Member3ShowcaseScreen(),
+      initialRoute: AppRoutes.home,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }
@@ -60,8 +62,8 @@ class _Member3ShowcaseScreenState extends State<Member3ShowcaseScreen> {
     MyBookingsScreen(),
     EventsScreen(),
     MyEventsScreen(),
+    GuestPassesHubScreen(),
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +72,6 @@ class _Member3ShowcaseScreenState extends State<Member3ShowcaseScreen> {
         index: _currentIndex,
         children: _pages,
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
@@ -96,10 +97,13 @@ class _Member3ShowcaseScreenState extends State<Member3ShowcaseScreen> {
             activeIcon: Icon(Icons.how_to_reg),
             label: 'My Events',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.badge_outlined),
+            activeIcon: Icon(Icons.badge),
+            label: 'Guests',
+          ),
         ],
       ),
     );
   }
 }
-
-

@@ -150,7 +150,7 @@ class _GuestPassTicketScreenState extends State<GuestPassTicketScreen> {
               ),
               const SizedBox(height: AppSpacing.spaceMd),
 
-              // 2. Authorized Zones Summary Card
+              // 2. Authorized Zones & Guest Contact Summary Card
               Container(
                 padding: const EdgeInsets.all(AppSpacing.cardPadding),
                 decoration: BoxDecoration(
@@ -168,12 +168,44 @@ class _GuestPassTicketScreenState extends State<GuestPassTicketScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.spaceSm),
-                    Text(
-                      record.contactInfo,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.onSurface,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.phone_outlined,
+                          size: 16,
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            record.phoneNumber,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.onSurface,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.spaceXs),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.email_outlined,
+                          size: 16,
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            record.email,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.onSurface,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: AppSpacing.itemSpacing),
                     Wrap(

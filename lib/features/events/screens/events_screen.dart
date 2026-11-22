@@ -3,7 +3,7 @@ import '../../../core/constants/app_constants.dart';
 import '../models/event_model.dart';
 import '../services/event_mock_data.dart';
 import '../widgets/event_card.dart';
-import 'event_details_screen.dart';
+import '../../../core/routes/app_routes.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -192,11 +192,10 @@ class _EventsScreenState extends State<EventsScreen> {
             child: EventCard(
               event: event,
               onTap: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => EventDetailsScreen(event: event),
-                  ),
+                  AppRoutes.eventDetails,
+                  arguments: event,
                 ).then((_) => setState(() {}));
               },
             ),

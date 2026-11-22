@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
 import '../models/facility_model.dart';
-import 'booking_screen.dart';
+import '../../../core/routes/app_routes.dart';
 
 class FacilityDetailsScreen extends StatelessWidget {
   final Facility facility;
@@ -218,12 +218,10 @@ class FacilityDetailsScreen extends StatelessWidget {
           child: ElevatedButton(
             onPressed: facility.isAvailable
                 ? () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            BookingScreen(facility: facility),
-                      ),
+                      AppRoutes.bookFacility,
+                      arguments: facility,
                     );
                   }
                 : null,

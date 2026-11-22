@@ -4,7 +4,7 @@ import '../models/event_model.dart';
 import '../models/event_registration_model.dart';
 import '../services/event_mock_service.dart';
 import '../services/event_mock_data.dart';
-import 'my_events_screen.dart';
+import '../../../core/routes/app_routes.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   final ClubEvent event;
@@ -91,11 +91,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
-              Navigator.pushReplacement(
+              Navigator.pushReplacementNamed(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const MyEventsScreen(),
-                ),
+                AppRoutes.myEvents,
               );
             },
             child: const Text('View My Events'),

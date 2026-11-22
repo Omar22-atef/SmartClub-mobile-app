@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
 import '../models/facility_model.dart';
 import '../services/booking_mock_service.dart';
-import 'my_bookings_screen.dart';
+import '../../../core/routes/app_routes.dart';
 
 class BookingScreen extends StatefulWidget {
   final Facility facility;
@@ -117,11 +117,9 @@ class _BookingScreenState extends State<BookingScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
-              Navigator.pushReplacement(
+              Navigator.pushReplacementNamed(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const MyBookingsScreen(),
-                ),
+                AppRoutes.myBookings,
               );
             },
             child: const Text('View My Bookings'),

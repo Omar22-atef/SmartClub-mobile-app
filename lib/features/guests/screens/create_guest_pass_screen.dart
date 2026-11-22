@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/routes/app_routes.dart';
 import '../models/guest_pass_model.dart';
@@ -19,8 +20,10 @@ class CreateGuestPassScreen extends StatefulWidget {
 }
 
 class _CreateGuestPassScreenState extends State<CreateGuestPassScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _guestNameController = TextEditingController();
-  final _guestContactController = TextEditingController();
+  final _guestEmailController = TextEditingController();
+  final _guestPhoneController = TextEditingController();
   late final TextEditingController _visitDateController;
 
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
@@ -60,7 +63,8 @@ class _CreateGuestPassScreenState extends State<CreateGuestPassScreen> {
   @override
   void dispose() {
     _guestNameController.dispose();
-    _guestContactController.dispose();
+    _guestEmailController.dispose();
+    _guestPhoneController.dispose();
     _visitDateController.dispose();
     super.dispose();
   }
@@ -148,6 +152,50 @@ class _CreateGuestPassScreenState extends State<CreateGuestPassScreen> {
       _privileges = updated;
     });
   }
+  String? _validateName(String? value) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) {
+      return 'Guest full name is required.';
+    }
+    if (trimmed.length < 3) {
+      return 'Name must be at least 3 characters.';
+    }
+    if (!RegExp(r"^[a-zA-Z\u0600-\u06FF\s'-]+$").hasMatch(trimmed)) {
+      return 'Name can only contain letters and spaces.';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) {
+      return 'Email address is required.';
+    }
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    if (!emailRegex.hasMatch(trimmed)) {
+      return 'Enter a valid email (e.g. guest@example.com).';
+    }
+    return null;
+  }
+
+  String? _validatePhone(String? value) {
+    final raw = value?.trim() ?? '';
+    if (raw.isEmpty) {
+      return 'Mobile number is required.';
+    }
+    final normalized = raw.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    final isEgyptMobile =
+        RegExp(r'^(?:\+20|0020|0)?1[0125]\d{8}$').hasMatch(normalized);
+    final isInternational =
+        RegExp(r'^\+?[1-9]\d{7,14}$').hasMatch(normalized);
+
+    if (!isEgyptMobile && !isInternational) {
+      return 'Enter a valid mobile number (e.g. +20 100 050 7000).';
+    }
+    return null;
+  }
 
   void _submitForm() {
     final controller = GuestPassController.instance;
@@ -159,25 +207,15 @@ class _CreateGuestPassScreenState extends State<CreateGuestPassScreen> {
       );
       return;
     }
-
-    final name = _guestNameController.text.trim();
-    final contact = _guestContactController.text.trim();
-
-    if (name.isEmpty || contact.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter both the guest name and contact details.'),
-        ),
-      );
+    if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
-
     final enabledZones = _privileges
         .where((p) => p.isEnabled)
         .map((p) => p.title)
         .toList();
 
-    if (enabledZones.isEmpty) {
+        if (enabledZones.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Select at least one club access privilege.'),
@@ -186,9 +224,11 @@ class _CreateGuestPassScreenState extends State<CreateGuestPassScreen> {
       return;
     }
 
+
     final newRecord = controller.issuePass(
-      guestName: name,
-      contactInfo: contact,
+      guestName: _guestNameController.text.trim(),
+      email: _guestEmailController.text.trim(),
+      phoneNumber: _guestPhoneController.text.trim(),
       visitDate: _visitDateController.text,
       shortDate: _formatShortDate(_selectedDate),
       clearedZones: enabledZones,
@@ -271,196 +311,219 @@ class _CreateGuestPassScreenState extends State<CreateGuestPassScreen> {
             AppSpacing.marginMobile,
             AppSpacing.space2xl,
           ),
-          child: Container(
-            padding: const EdgeInsets.all(AppSpacing.cardPadding),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceLight,
-              borderRadius: AppRadius.medium,
-              border: Border.fromBorderSide(AppEffects.lightHairline),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Guest Credentials',
-                            style: AppTextStyles.headlineSmall.copyWith(
-                              color: AppColors.onSurface,
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.cardPadding),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLight,
+                borderRadius: AppRadius.medium,
+                border: Border.fromBorderSide(AppEffects.lightHairline),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Guest Credentials',
+                              style: AppTextStyles.headlineSmall.copyWith(
+                                color: AppColors.onSurface,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Issue digital club access for 1 complimentary visit',
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.onSurfaceVariant,
+                            Text(
+                              'Issue digital club access for 1 complimentary visit',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(
-                      Icons.badge_outlined,
-                      color: AppColors.onSurfaceVariant,
-                      size: 22,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.spaceMd),
-
-                // Guest Full Name
-                _buildInputField(
-                  label: 'Guest Full Name',
-                  controller: _guestNameController,
-                  hintText: 'e.g. Mohamed Ahmed',
-                  prefixIcon: Icons.person_outline,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: AppSpacing.spaceMd),
-
-                // Mobile or Email
-                _buildInputField(
-                  label: 'Mobile Number or Email',
-                  controller: _guestContactController,
-                  hintText: '+20 01000507000',
-                  prefixIcon: Icons.contact_phone_outlined,
-                  textInputAction: TextInputAction.done,
-                ),
-                const SizedBox(height: AppSpacing.spaceMd),
-
-                // Visit Date
-                _buildInputField(
-                  label: 'Visit Date',
-                  controller: _visitDateController,
-                  hintText: 'Select date',
-                  prefixIcon: Icons.calendar_today_outlined,
-                  suffixIcon: Icons.expand_more,
-                  readOnly: true,
-                  onTap: _pickVisitDate,
-                ),
-                const SizedBox(height: AppSpacing.spaceMd),
-
-                // Zone Clearance Toggles
-                Text(
-                  'Privileges & Zone Clearance',
-                  style: AppTextStyles.labelMedium.copyWith(
-                    color: AppColors.onSurface,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.spaceSm),
-                Column(
-                  children: List.generate(_privileges.length, (index) {
-                    final item = _privileges[index];
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        bottom: index == _privileges.length - 1
-                            ? 0
-                            : AppSpacing.spaceSm,
-                      ),
-                      child: InkWell(
-                        onTap: () => _togglePrivilege(index),
-                        borderRadius: AppRadius.medium,
-                        child: Container(
-                          padding: const EdgeInsets.all(AppSpacing.itemSpacing),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceMuted,
-                            borderRadius: AppRadius.medium,
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 32,
-                                height: 32,
-                                decoration: BoxDecoration(
-                                  color: AppColors.surfaceLight,
-                                  borderRadius: AppRadius.standard,
-                                ),
-                                child: Icon(
-                                  item.icon,
-                                  size: 18,
-                                  color: AppColors.onSurface,
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.itemSpacing),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.title,
-                                      style: AppTextStyles.labelLarge.copyWith(
-                                        color: AppColors.onSurface,
-                                      ),
-                                    ),
-                                    Text(
-                                      item.subtitle,
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        fontSize: 12,
-                                        color: AppColors.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.spaceSm),
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: Checkbox(
-                                  value: item.isEnabled,
-                                  onChanged: (_) => _togglePrivilege(index),
-                                  activeColor: AppColors.surfaceDark,
-                                  checkColor: AppColors.pureWhite,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: AppRadius.small,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          ],
                         ),
                       ),
-                    );
-                  }),
-                ),
-                const SizedBox(height: AppSpacing.spaceLg),
+                      const Icon(
+                        Icons.badge_outlined,
+                        color: AppColors.onSurfaceVariant,
+                        size: 22,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.spaceMd),
 
-                // Generate Invitation CTA
-                Container(
-                  width: double.infinity,
-                  height: AppDimensions.primaryButtonHeight,
-                  decoration: BoxDecoration(
-                    borderRadius: AppRadius.pill,
-                    boxShadow: AppEffects.limeActiveGlow,
+                  // 1. Guest Full Name
+                  _buildInputField(
+                    label: 'Guest Full Name',
+                    controller: _guestNameController,
+                    hintText: 'e.g. Mohamed Ahmed',
+                    prefixIcon: Icons.person_outline,
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.next,
+                    validator: _validateName,
                   ),
-                  child: ElevatedButton.icon(
-                    onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.limeNeon,
-                      foregroundColor: AppColors.surfaceDark,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: AppRadius.pill,
+                  const SizedBox(height: AppSpacing.spaceMd),
+
+                  // 2. Guest Email Address
+                  _buildInputField(
+                    label: 'Email Address',
+                    controller: _guestEmailController,
+                    hintText: 'e.g. mohamed.ahmed@email.com',
+                    prefixIcon: Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    validator: _validateEmail,
+                  ),
+                  const SizedBox(height: AppSpacing.spaceMd),
+
+                  // 3. Guest Mobile Number
+                  _buildInputField(
+                    label: 'Mobile Number',
+                    controller: _guestPhoneController,
+                    hintText: '+20 100 050 7000',
+                    prefixIcon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.done,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9+\-\s\(\)]')),
+                    ],
+                    validator: _validatePhone,
+                  ),
+                  const SizedBox(height: AppSpacing.spaceMd),
+
+                  // 4. Visit Date
+                  _buildInputField(
+                    label: 'Visit Date',
+                    controller: _visitDateController,
+                    hintText: 'Select date',
+                    prefixIcon: Icons.calendar_today_outlined,
+                    suffixIcon: Icons.expand_more,
+                    readOnly: true,
+                    onTap: _pickVisitDate,
+                  ),
+                  const SizedBox(height: AppSpacing.spaceMd),
+
+                  // Zone Clearance Toggles
+                  Text(
+                    'Privileges & Zone Clearance',
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.spaceSm),
+                  Column(
+                    children: List.generate(_privileges.length, (index) {
+                      final item = _privileges[index];
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom: index == _privileges.length - 1
+                              ? 0
+                              : AppSpacing.spaceSm,
+                        ),
+                        child: InkWell(
+                          onTap: () => _togglePrivilege(index),
+                          borderRadius: AppRadius.medium,
+                          child: Container(
+                            padding: const EdgeInsets.all(AppSpacing.itemSpacing),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceMuted,
+                              borderRadius: AppRadius.medium,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.surfaceLight,
+                                    borderRadius: AppRadius.standard,
+                                  ),
+                                  child: Icon(
+                                    item.icon,
+                                    size: 18,
+                                    color: AppColors.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.itemSpacing),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item.title,
+                                        style: AppTextStyles.labelLarge.copyWith(
+                                          color: AppColors.onSurface,
+                                        ),
+                                      ),
+                                      Text(
+                                        item.subtitle,
+                                        style: AppTextStyles.bodyMedium.copyWith(
+                                          fontSize: 12,
+                                          color: AppColors.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.spaceSm),
+                                SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: Checkbox(
+                                    value: item.isEnabled,
+                                    onChanged: (_) => _togglePrivilege(index),
+                                    activeColor: AppColors.surfaceDark,
+                                    checkColor: AppColors.pureWhite,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: AppRadius.small,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: AppSpacing.spaceLg),
+
+                  // Generate Invitation CTA
+                  Container(
+                    width: double.infinity,
+                    height: AppDimensions.primaryButtonHeight,
+                    decoration: BoxDecoration(
+                      borderRadius: AppRadius.pill,
+                      boxShadow: AppEffects.limeActiveGlow,
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.limeNeon,
+                        foregroundColor: AppColors.surfaceDark,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppRadius.pill,
+                        ),
+                        elevation: 0,
                       ),
-                      elevation: 0,
-                    ),
-                    icon: const Icon(
-                      Icons.confirmation_number_outlined,
-                      size: 20,
-                    ),
-                    label: Text(
-                      'GENERATE INVITATION',
-                      style: AppTextStyles.labelLarge.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.surfaceDark,
+                      icon: const Icon(
+                        Icons.confirmation_number_outlined,
+                        size: 20,
+                      ),
+                      label: Text(
+                        'GENERATE INVITATION',
+                        style: AppTextStyles.labelLarge.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.surfaceDark,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -477,6 +540,10 @@ class _CreateGuestPassScreenState extends State<CreateGuestPassScreen> {
     bool readOnly = false,
     VoidCallback? onTap,
     TextInputAction? textInputAction,
+    TextInputType? keyboardType,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -488,49 +555,69 @@ class _CreateGuestPassScreenState extends State<CreateGuestPassScreen> {
           ),
         ),
         const SizedBox(height: 6),
-        SizedBox(
-          height: AppDimensions.inputHeight,
-          child: TextField(
-            controller: controller,
-            readOnly: readOnly,
-            onTap: onTap,
-            textInputAction: textInputAction,
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.onSurface,
+        TextFormField(
+          controller: controller,
+          readOnly: readOnly,
+          onTap: onTap,
+          textInputAction: textInputAction,
+          keyboardType: keyboardType,
+          textCapitalization: textCapitalization,
+          inputFormatters: inputFormatters,
+          validator: validator,
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.onSurface,
+          ),
+          decoration: InputDecoration(
+            hintText: hintText,
+            filled: true,
+            fillColor: AppColors.surfaceMuted,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.spaceMd,
+              vertical: 14,
             ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              filled: true,
-              fillColor: AppColors.surfaceMuted,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.spaceMd,
+            prefixIcon: Icon(
+              prefixIcon,
+              size: 18,
+              color: AppColors.onSurfaceVariant,
+            ),
+            suffixIcon: suffixIcon != null
+                ? Icon(
+                    suffixIcon,
+                    size: 18,
+                    color: AppColors.onSurfaceVariant,
+                  )
+                : null,
+            errorStyle: AppTextStyles.labelMedium.copyWith(
+              fontSize: 11,
+              color: AppColors.error,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: AppRadius.medium,
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: AppRadius.medium,
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: AppRadius.medium,
+              borderSide: const BorderSide(
+                color: AppColors.midnightBlack,
+                width: AppDimensions.borderWidth,
               ),
-              prefixIcon: Icon(
-                prefixIcon,
-                size: 18,
-                color: AppColors.onSurfaceVariant,
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: AppRadius.medium,
+              borderSide: const BorderSide(
+                color: AppColors.error,
+                width: AppDimensions.borderWidth,
               ),
-              suffixIcon: suffixIcon != null
-                  ? Icon(
-                      suffixIcon,
-                      size: 18,
-                      color: AppColors.onSurfaceVariant,
-                    )
-                  : null,
-              border: OutlineInputBorder(
-                borderRadius: AppRadius.medium,
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: AppRadius.medium,
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: AppRadius.medium,
-                borderSide: const BorderSide(
-                  color: AppColors.midnightBlack,
-                  width: AppDimensions.borderWidth,
-                ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: AppRadius.medium,
+              borderSide: const BorderSide(
+                color: AppColors.error,
+                width: AppDimensions.borderWidth,
               ),
             ),
           ),

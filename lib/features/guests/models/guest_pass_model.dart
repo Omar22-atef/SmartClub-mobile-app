@@ -33,7 +33,8 @@ class GuestPassRecord {
     required this.id,
     required this.initials,
     required this.guestName,
-    required this.contactInfo,
+    required this.email,
+    required this.phoneNumber,
     required this.visitDate,
     required this.subtitle,
     required this.status,
@@ -49,7 +50,8 @@ class GuestPassRecord {
   final String id;
   final String initials;
   final String guestName;
-  final String contactInfo;
+  final String email;
+  final String phoneNumber;
   final String visitDate;
   final String subtitle;
   final GuestPassStatus status;

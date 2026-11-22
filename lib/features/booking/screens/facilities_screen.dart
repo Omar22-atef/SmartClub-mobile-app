@@ -3,7 +3,7 @@ import '../../../core/constants/app_constants.dart';
 import '../models/facility_model.dart';
 import '../services/facility_mock_data.dart';
 import '../widgets/facility_card.dart';
-import 'facility_details_screen.dart';
+import '../../../core/routes/app_routes.dart';
 
 class FacilitiesScreen extends StatefulWidget {
   const FacilitiesScreen({super.key});
@@ -208,13 +208,10 @@ class _FacilitiesScreenState extends State<FacilitiesScreen> {
             child: FacilityCard(
               facility: facility,
               onTap: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => FacilityDetailsScreen(
-                      facility: facility,
-                    ),
-                  ),
+                  AppRoutes.facilityDetails,
+                  arguments: facility,
                 );
               },
             ),

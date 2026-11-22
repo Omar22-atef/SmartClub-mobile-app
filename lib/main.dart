@@ -2,18 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'core/constants/app_constants.dart';
 import 'core/theme/app_theme.dart';
-import 'features/booking/models/facility_model.dart';
-import 'features/booking/screens/booking_screen.dart';
-import 'features/booking/screens/facilities_screen.dart';
-import 'features/booking/screens/facility_details_screen.dart';
-import 'features/booking/screens/my_bookings_screen.dart';
-import 'features/booking/services/facility_mock_data.dart';
-import 'features/events/models/event_model.dart';
-import 'features/events/screens/event_details_screen.dart';
-import 'features/events/screens/events_screen.dart';
-import 'features/events/screens/my_events_screen.dart';
-import 'features/events/services/event_mock_data.dart';
-
+import 'core/routes/app_routes.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -38,6 +27,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+  debugShowCheckedModeBanner: false,
+  title: 'Smart Club',
+  theme: AppTheme.lightTheme,
+  initialRoute: AppRoutes.guestPass,
+  onGenerateRoute: AppRoutes.onGenerateRoute,
+  );
+  }
+}
+
       debugShowCheckedModeBanner: false,
       title: 'Smart Club - Member 3',
       theme: AppTheme.lightTheme,

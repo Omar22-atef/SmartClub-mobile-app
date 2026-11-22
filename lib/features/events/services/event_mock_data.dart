@@ -1,0 +1,103 @@
+import 'package:flutter/material.dart';
+import '../models/event_model.dart';
+
+final List<ClubEvent> mockEvents = [
+  ClubEvent(
+    id: '1',
+    title: 'Summer Tennis Tournament',
+    category: EventCategory.tournaments,
+    date: DateTime.now().add(const Duration(days: 14)),
+    time: '9:00 AM – 5:00 PM',
+    location: 'Tennis Courts A & B',
+    description: 'Annual singles and doubles tennis championship.',
+    fullDescription:
+        'Join us for the highly anticipated Summer Tennis Tournament! This annual event brings together club members of all skill levels for a day of competitive play. The tournament features singles and doubles brackets with round-robin group stages followed by knockout rounds. Prizes will be awarded to winners and runners-up in each category. Light refreshments and snacks will be provided throughout the day.',
+    organizer: 'Club Sports Committee',
+    maxCapacity: 32,
+    registeredCount: 18,
+    registrationDeadline: DateTime.now().add(const Duration(days: 10)),
+    icon: Icons.sports_tennis,
+  ),
+  ClubEvent(
+    id: '2',
+    title: 'Football Championship',
+    category: EventCategory.tournaments,
+    date: DateTime.now().add(const Duration(days: 21)),
+    time: '10:00 AM – 6:00 PM',
+    location: 'Football Court',
+    description: 'Inter-club 5-a-side football championship.',
+    fullDescription:
+        'The Football Championship is back! Assemble your team of five and compete against fellow club members in this exciting 5-a-side tournament. Groups are drawn randomly, with the top two teams from each group advancing to the semi-finals. Professional referees will officiate all matches. Trophies and medals for the top three teams. BBQ and refreshments available.',
+    organizer: 'Club Sports Committee',
+    maxCapacity: 40,
+    registeredCount: 35,
+    registrationDeadline: DateTime.now().add(const Duration(days: 17)),
+    icon: Icons.sports_soccer,
+  ),
+  ClubEvent(
+    id: '3',
+    title: 'Club Family Day',
+    category: EventCategory.social,
+    date: DateTime.now().add(const Duration(days: 7)),
+    time: '11:00 AM – 4:00 PM',
+    location: 'Club Main Garden',
+    description:
+        'A fun-filled day for the whole family with activities and food.',
+    fullDescription:
+        'Bring the whole family for a wonderful day of activities, games, and food! Our annual Family Day features bouncy castles, face painting, a magic show, sports taster sessions, and a talent contest. A family BBQ lunch is included with your registration. This is a great opportunity to meet other club families and enjoy the club grounds together.',
+    organizer: 'Events & Social Team',
+    maxCapacity: 150,
+    registeredCount: 89,
+    registrationDeadline: DateTime.now().add(const Duration(days: 5)),
+    icon: Icons.family_restroom,
+  ),
+  ClubEvent(
+    id: '4',
+    title: 'Swimming Competition',
+    category: EventCategory.sports,
+    date: DateTime.now().add(const Duration(days: 30)),
+    time: '8:00 AM – 1:00 PM',
+    location: 'Aquatic Center',
+    description: 'Club swimming gala across multiple age groups.',
+    fullDescription:
+        'Dive in and compete in our annual Swimming Competition! Open to all ages, the gala features freestyle, backstroke, breaststroke, and butterfly events across junior, senior, and masters categories. Medals and certificates for all participants. Spectators are welcome in the gallery seating area. Arrive 30 minutes before your race for warm-up.',
+    organizer: 'Aquatics Department',
+    maxCapacity: 60,
+    registeredCount: 22,
+    registrationDeadline: DateTime.now().add(const Duration(days: 25)),
+    icon: Icons.pool,
+  ),
+  ClubEvent(
+    id: '5',
+    title: 'Fitness Workshop',
+    category: EventCategory.workshops,
+    date: DateTime.now().add(const Duration(days: 3)),
+    time: '6:00 PM – 8:00 PM',
+    location: 'Fitness Wing, Studio 1',
+    description:
+        'Strength and conditioning workshop by a certified trainer.',
+    fullDescription:
+        'Elevate your fitness routine with our expert-led Strength and Conditioning Workshop! Learn proper form, effective programming, and injury prevention techniques from our certified personal trainer. The workshop covers compound movements, mobility work, and nutrition basics. Suitable for beginners and intermediate fitness enthusiasts. Wear comfortable workout clothes and bring a water bottle.',
+    organizer: 'Fitness Department',
+    maxCapacity: 25,
+    registeredCount: 25,
+    registrationDeadline: DateTime.now().add(const Duration(days: 1)),
+    icon: Icons.fitness_center,
+  ),
+  ClubEvent(
+    id: '6',
+    title: 'Annual Club Celebration',
+    category: EventCategory.social,
+    date: DateTime.now().add(const Duration(days: 45)),
+    time: '7:00 PM – 11:00 PM',
+    location: 'Grand Ballroom',
+    description: 'An elegant evening celebrating the club\'s anniversary.',
+    fullDescription:
+        'Join us for an elegant evening as we celebrate our club\'s anniversary! The gala dinner features a three-course meal, live music, awards ceremony, and dancing. Dress code is formal/black-tie optional. The evening will include the annual Member of the Year awards, a photo booth, and a raffle with exciting prizes. Complimentary welcome drinks upon arrival.',
+    organizer: 'Club Management',
+    maxCapacity: 200,
+    registeredCount: 134,
+    registrationDeadline: DateTime.now().add(const Duration(days: 40)),
+    icon: Icons.celebration,
+  ),
+];

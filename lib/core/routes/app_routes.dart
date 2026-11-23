@@ -15,6 +15,9 @@ import '../../features/guests/screens/guest_pass_ticket_screen.dart';
 import '../../features/guests/screens/guest_passes_hub_screen.dart';
 import '../constants/app_constants.dart';
 import '../widgets/main_shell_screen.dart';
+import '../../features/auth/screens/login_screen.dart';
+import '../../features/auth/screens/forgot_password_screen.dart';
+import '../../features/auth/screens/register_screen.dart';
 
 class CreateGuestPassArgs {
   const CreateGuestPassArgs({
@@ -41,6 +44,10 @@ class AppRoutes {
 
   // Shell
   static const String home = '/';
+  // Auth
+  static const String login = '/login';
+  static const String register = '/register';
+  static const String forgotPassword = '/forgot-password';
 
   // Booking
   static const String facilities = '/facilities';
@@ -65,7 +72,15 @@ class AppRoutes {
       // Shell
       case home:
         return _route(const MainShellScreen(), settings);
+    // Auth
+      case login:
+        return _route(const LoginScreen(), settings);
 
+      case register:
+        return _route(const RegisterScreen(), settings);
+
+      case forgotPassword:
+        return _route(const ForgotPasswordScreen(), settings);
       // Booking
       case facilities:
         return _route(const FacilitiesScreen(), settings);

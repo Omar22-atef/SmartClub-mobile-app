@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       title: 'Smart Club',
       theme: AppTheme.lightTheme,
       scrollBehavior: const AppScrollBehavior(),
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.login,
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }

@@ -4,6 +4,7 @@ import '../models/facility_model.dart';
 import '../services/facility_mock_data.dart';
 import '../widgets/facility_card.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../notifications/widgets/notification_bell_button.dart';
 
 class FacilitiesScreen extends StatefulWidget {
   const FacilitiesScreen({super.key});
@@ -183,6 +184,10 @@ class _FacilitiesScreenState extends State<FacilitiesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Facilities'),
+        actions: const [
+          NotificationBellButton(),
+          SizedBox(width: AppSpacing.spaceXs),
+        ],
       ),
       body: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),

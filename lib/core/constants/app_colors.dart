@@ -73,6 +73,10 @@ class AppColors {
   static const Color onTertiaryFixed = Color(0xFF1D1B19);
   static const Color onTertiaryFixedVariant = Color(0xFF494644);
 
+  // Warning tokens (expiring memberships, pending states)
+  static const Color warning = Color(0xFFB26A00);
+  static const Color warningContainer = Color(0xFFFFE8C2);
+
   // Background and outline tokens
   static const Color background = Color(0xFFF8F9FF);
   static const Color onBackground = Color(0xFF171C23);

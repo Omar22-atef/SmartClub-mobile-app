@@ -3,6 +3,7 @@ import '../../../core/constants/app_constants.dart';
 import '../models/booking_model.dart';
 import '../services/booking_mock_service.dart';
 import '../widgets/booking_card.dart';
+import '../../payments/services/payment_controller.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -96,6 +97,15 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Rebuild when a payment creates or refunds a booking, so this tab
+    // (kept alive by the IndexedStack in MainShellScreen) never goes stale.
+    return ListenableBuilder(
+      listenable: PaymentController.instance,
+      builder: (context, _) => _buildContent(context),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     final theme = Theme.of(context);
     final bookings = _bookingService.getFilteredBookings(_selectedFilter);
     final totalItems = bookings.isEmpty ? 2 : bookings.length + 1;
@@ -152,11 +162,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
           ElevatedButton(
             onPressed: () {
               _bookingService.cancelBooking(booking.id);
+              // Refund the payment made for this booking (if any).
+              PaymentController.instance.refundByReference(booking.referenceId);
               Navigator.pop(ctx);
               setState(() {});
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Booking cancelled successfully'),
+                  content: Text('Booking cancelled — payment refunded'),
                 ),
               );
             },

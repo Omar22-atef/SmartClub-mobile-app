@@ -5,6 +5,7 @@ import '../../features/booking/screens/my_bookings_screen.dart';
 import '../../features/events/screens/events_screen.dart';
 import '../../features/events/screens/my_events_screen.dart';
 import '../../features/guests/screens/guest_passes_hub_screen.dart';
+import '../../features/subscriptions/screens/membership_plans_screen.dart';
 
 class MainShellScreen extends StatefulWidget {
   const MainShellScreen({super.key});
@@ -22,6 +23,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
     EventsScreen(),
     MyEventsScreen(),
     GuestPassesHubScreen(),
+    MembershipPlansScreen(),
   ];
 
   @override
@@ -60,6 +62,11 @@ class _MainShellScreenState extends State<MainShellScreen> {
             icon: Icon(Icons.badge_outlined),
             activeIcon: Icon(Icons.badge),
             label: 'Guests',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.card_membership_outlined),
+            activeIcon: Icon(Icons.card_membership),
+            label: 'Membership',
           ),
         ],
       ),

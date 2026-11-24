@@ -3,6 +3,7 @@ import '../../../core/constants/app_constants.dart';
 import '../models/facility_model.dart';
 import '../services/booking_mock_service.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../payments/models/payment_request_model.dart';
 
 class BookingScreen extends StatefulWidget {
   final Facility facility;
@@ -51,92 +52,23 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  void _confirmBooking() {
+  /// The booking is only created after a successful payment
+  /// (see PaymentController._fulfil).
+  void _proceedToPayment() {
     final slotToBook = _selectedTimeSlot;
     if (slotToBook == null) return;
 
-    final booking = _bookingService.addBooking(
-      facilityId: widget.facility.id,
-      facilityName: widget.facility.name,
-      date: _selectedDate,
-      timeSlot: slotToBook,
-      pricePerHour: widget.facility.pricePerHour,
-    );
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.large),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: AppColors.secondaryContainer,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.check, color: AppColors.secondary),
-            ),
-            const SizedBox(width: AppSpacing.spaceSm),
-            const Expanded(child: Text('Booking Confirmed!')),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Your booking has been confirmed successfully.',
-              style: Theme.of(ctx).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: AppSpacing.spaceMd),
-            _SummaryRow(
-              label: 'Reference',
-              value: booking.referenceId,
-            ),
-            _SummaryRow(
-              label: 'Facility',
-              value: booking.facilityName,
-            ),
-            _SummaryRow(
-              label: 'Date',
-              value: _formatDate(booking.date),
-            ),
-            _SummaryRow(
-              label: 'Time',
-              value: booking.timeSlot,
-            ),
-            _SummaryRow(
-              label: 'Total',
-              value: '\$${booking.totalPrice.toStringAsFixed(0)}',
-            ),
-          ],
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.pushReplacementNamed(
-                context,
-                AppRoutes.myBookings,
-              );
-            },
-            child: const Text('View My Bookings'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.pop(context);
-            },
-            child: const Text('Done'),
-          ),
-        ],
+    final request = PaymentRequest.booking(
+      BookingDraft(
+        facility: widget.facility,
+        date: _selectedDate,
+        timeSlot: slotToBook,
       ),
     );
 
-    setState(() {
-      _selectedTimeSlot = null;
+    Navigator.pushNamed(context, AppRoutes.payment, arguments: request).then((_) {
+      // Refresh slot availability when coming back from checkout.
+      if (mounted) setState(() => _selectedTimeSlot = null);
     });
   }
 
@@ -402,8 +334,12 @@ class _BookingScreenState extends State<BookingScreen> {
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.gutter),
           child: ElevatedButton(
-            onPressed: _selectedTimeSlot != null ? _confirmBooking : null,
-            child: const Text('Confirm Booking'),
+            onPressed: _selectedTimeSlot != null ? _proceedToPayment : null,
+            child: Text(
+              _selectedTimeSlot != null
+                  ? 'Continue to Payment • \$${widget.facility.pricePerHour.toStringAsFixed(0)}'
+                  : 'Select a Time Slot',
+            ),
           ),
         ),
       ),

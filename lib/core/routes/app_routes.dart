@@ -13,6 +13,16 @@ import '../../features/guests/models/guest_pass_model.dart';
 import '../../features/guests/screens/create_guest_pass_screen.dart';
 import '../../features/guests/screens/guest_pass_ticket_screen.dart';
 import '../../features/guests/screens/guest_passes_hub_screen.dart';
+import '../../features/notifications/screens/notifications_screen.dart';
+import '../../features/payments/models/payment_model.dart';
+import '../../features/payments/models/payment_request_model.dart';
+import '../../features/payments/screens/payment_confirmation_screen.dart';
+import '../../features/payments/screens/payment_history_screen.dart';
+import '../../features/payments/screens/payment_screen.dart';
+import '../../features/subscriptions/screens/membership_history_screen.dart';
+import '../../features/subscriptions/screens/membership_plans_screen.dart';
+import '../../features/subscriptions/screens/renewal_screen.dart';
+import '../../features/subscriptions/screens/subscription_details_screen.dart';
 import '../constants/app_constants.dart';
 import '../widgets/main_shell_screen.dart';
 
@@ -36,6 +46,20 @@ class GuestPassTicketArgs {
   final bool isNewlyIssued;
 }
 
+/// Arguments for [AppRoutes.paymentConfirmation].
+///
+/// [isNewPayment] = true right after paying (success screen),
+/// false when opening an old receipt from the payment history.
+class PaymentReceiptArgs {
+  const PaymentReceiptArgs({
+    required this.payment,
+    this.isNewPayment = false,
+  });
+
+  final Payment payment;
+  final bool isNewPayment;
+}
+
 class AppRoutes {
   AppRoutes._();
 
@@ -57,6 +81,20 @@ class AppRoutes {
   static const String guestPass = '/guest-pass';
   static const String createGuestPass = '/guest-pass/create';
   static const String guestPassTicket = '/guest-pass/ticket';
+
+  // Subscriptions / Membership
+  static const String membershipPlans = '/membership';
+  static const String subscriptionDetails = '/membership/details';
+  static const String renewal = '/membership/renew';
+  static const String membershipHistory = '/membership/history';
+
+  // Payments
+  static const String payment = '/payment';
+  static const String paymentConfirmation = '/payment/confirmation';
+  static const String paymentHistory = '/payment/history';
+
+  // Notifications
+  static const String notifications = '/notifications';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final args = settings.arguments;
@@ -126,6 +164,45 @@ class AppRoutes {
           ),
           settings,
         );
+
+      // Subscriptions / Membership
+      case membershipPlans:
+        return _route(const MembershipPlansScreen(), settings);
+
+      case subscriptionDetails:
+        return _route(const SubscriptionDetailsScreen(), settings);
+
+      case renewal:
+        return _route(const RenewalScreen(), settings);
+
+      case membershipHistory:
+        return _route(const MembershipHistoryScreen(), settings);
+
+      // Payments
+      case payment:
+        if (args is! PaymentRequest) {
+          return _errorRoute('Missing or invalid payment details.', settings);
+        }
+        return _route(PaymentScreen(request: args), settings);
+
+      case paymentConfirmation:
+        if (args is! PaymentReceiptArgs) {
+          return _errorRoute('Missing or invalid receipt details.', settings);
+        }
+        return _route(
+          PaymentConfirmationScreen(
+            payment: args.payment,
+            isNewPayment: args.isNewPayment,
+          ),
+          settings,
+        );
+
+      case paymentHistory:
+        return _route(const PaymentHistoryScreen(), settings);
+
+      // Notifications
+      case notifications:
+        return _route(const NotificationsScreen(), settings);
 
       default:
         return _errorRoute(

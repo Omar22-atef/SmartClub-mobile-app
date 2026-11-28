@@ -4,8 +4,8 @@ import '../../../core/constants/app_constants.dart';
 import '../data/admin_mock_data.dart';
 import '../widgets/admin_common_widgets.dart';
 import '../widgets/admin_navigation.dart';
+import '../widgets/dashboard_charts.dart';
 import '../widgets/dashboard_stat_card.dart';
-import 'admin_login_screen.dart';
 import 'manage_bookings_screen.dart';
 import 'manage_events_screen.dart';
 import 'manage_facilities_screen.dart';
@@ -76,13 +76,6 @@ class AdminDashboardScreen extends StatelessWidget {
             ],
           ),
         ),
-        IconButton(
-          tooltip: 'Log out',
-          icon: const Icon(Icons.logout),
-          onPressed: () => Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const AdminLoginScreen()),
-          ),
-        ),
       ],
       bottomNavigationBar: AdminNavigation(
         current: AdminSection.dashboard,
@@ -91,13 +84,15 @@ class AdminDashboardScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          GridView.count(
-            crossAxisCount: 2,
+          GridView(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1.3,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              mainAxisExtent: 124,
+            ),
             children: [
               DashboardStatCard(
                 label: 'Total Members',
@@ -132,7 +127,7 @@ class AdminDashboardScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 110,
+            height: 124,
             child: DashboardStatCard(
               dark: true,
               label: 'Total Payments',
@@ -144,15 +139,25 @@ class AdminDashboardScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
+          const _SectionLabel('Analytics'),
+          const SizedBox(height: 8),
+          const RevenueLineChart(),
+          const SizedBox(height: 12),
+          const BookingsBarChart(),
+          const SizedBox(height: 12),
+          const MembershipDonutChart(),
+          const SizedBox(height: 24),
           const _SectionLabel('Quick Management'),
           const SizedBox(height: 8),
-          GridView.count(
-            crossAxisCount: 2,
+          GridView(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 2.2,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              mainAxisExtent: 72,
+            ),
             children: [
               for (final section in AdminSection.manageable)
                 _QuickTile(

@@ -12,6 +12,19 @@ class AdminMockData {
     'totalPayments': '\$48,290',
   };
 
+  static const List<String> revenueMonths = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
+  static const List<double> revenueValues = [6200, 7400, 6900, 8800, 9600, 9390];
+
+  static const List<String> bookingDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  static const List<double> bookingValues = [42, 55, 48, 61, 70, 88, 64];
+
+  static const Map<String, double> planDistribution = {
+    'Bronze': 210,
+    'Silver': 380,
+    'Gold': 450,
+    'Platinum': 208,
+  };
+
   static final List<Map<String, dynamic>> activity = [
     {'title': 'Sophia Martinez — Guest QR Scanned', 'sub': 'Gate B • 2m ago', 'tag': 'ENTRY', 'icon': Icons.qr_code_2},
     {'title': 'Court 02 Booked — Marcus Reed', 'sub': '\$35 • 14m ago', 'tag': 'BOOKING', 'icon': Icons.sports_tennis},

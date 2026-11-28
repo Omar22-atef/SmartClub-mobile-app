@@ -12,7 +12,7 @@ class ManageMembersScreen extends StatefulWidget {
 
 class _ManageMembersScreenState extends State<ManageMembersScreen> {
   final List<Map<String, dynamic>> _members =
-      AdminMockData.members.map((m) => Map<String, dynamic>.from(m)).toList();
+  AdminMockData.members.map((m) => Map<String, dynamic>.from(m)).toList();
   String _query = '';
   String _filter = 'All';
 
@@ -114,24 +114,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                         ],
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        StatusChip(m['status']),
-                        const SizedBox(height: 6),
-                        InkWell(
-                          onTap: () => _toggle(m),
-                          child: Text(
-                            m['status'] == 'Active' ? 'Suspend' : 'Activate',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: m['status'] == 'Active' ? AppColors.error : AppColors.secondary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    StatusChip(m['status']),
                   ],
                 ),
               ),
